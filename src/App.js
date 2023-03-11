@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Web3 from "web3";
 import loadContract from "./contracts/loadContract";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [input, setInput] = useState("");
@@ -8,8 +10,6 @@ function App() {
   const [accounts, setAccounts] = useState("");
   const [web3, setWeb3] = useState(null);
   const [contract, setContract] = useState(null);
-  const [error, setError] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
 
   const connectWalletHandler = async () => {
     if (typeof window.ethereum !== "undefined") {
@@ -23,7 +23,7 @@ function App() {
         const contract = loadContract(web3);
         setContract(contract);
       } catch (error) {
-        setError(error.message);
+        toast.error("User rejected request!!");
       }
     } else {
       console.log("Please install MetaMask");
@@ -41,9 +41,9 @@ function App() {
     try {
       await contract.methods.setter(input).send({ from: accounts });
       setInput("");
-      setSuccessMsg("Transaction Successful");
+      toast.success("Transaction Successful");
     } catch (error) {
-      setError("User denied transaction signature");
+      toast.error("User denied transaction signature");
     }
   };
   return (
@@ -87,8 +87,7 @@ function App() {
         Get Number
       </button>
       <p>{`Number is : ${number}`} </p>
-      <p className="text-danger bold">{error}</p>
-      <p className="text-success bold">{successMsg}</p>
+      <ToastContainer />
     </section>
   );
 }
